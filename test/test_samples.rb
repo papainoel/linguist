@@ -1,7 +1,7 @@
 require_relative "./helper"
 require "tempfile"
 
-class TestSamples < Test::Unit::TestCase
+class TestSamples < Minitest::Test
   include Linguist
 
   def test_up_to_date
@@ -50,8 +50,7 @@ class TestSamples < Test::Unit::TestCase
       options['extensions'] ||= []
       if extnames = Samples.cache['extnames'][name]
         extnames.each do |extname|
-          assert options['extensions'].include?(extname),
-            "#{name} has a sample with extension (#{extname}) that isn't explicitly defined in languages.yml"
+          assert options['extensions'].index { |x| x.downcase.end_with? extname.downcase }, "#{name} has a sample with extension (#{extname.downcase}) that isn't explicitly defined in languages.yml"
         end
       end
 
@@ -75,7 +74,7 @@ class TestSamples < Test::Unit::TestCase
         if language_matches.length > 1
           language_matches.each do |match|
             samples = "samples/#{match.name}/*#{extension}"
-            assert Dir.glob(samples).any?, "Missing samples in #{samples.inspect}. See https://github.com/github/linguist/blob/master/CONTRIBUTING.md"
+            assert Dir.glob(samples, File::FNM_CASEFOLD).any?, "Missing samples in #{samples.inspect}. See https://github.com/github/linguist/blob/master/CONTRIBUTING.md"
           end
         end
       end
@@ -89,10 +88,5 @@ class TestSamples < Test::Unit::TestCase
         end
       end
     end
-  end
-
-  def test_shebang
-    assert_equal "crystal", Linguist.interpreter_from_shebang("#!/usr/bin/env bin/crystal")
-    assert_equal "python2", Linguist.interpreter_from_shebang("#!/usr/bin/python2.4")
   end
 end

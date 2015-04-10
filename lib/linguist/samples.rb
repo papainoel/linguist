@@ -6,6 +6,7 @@ end
 
 require 'linguist/md5'
 require 'linguist/classifier'
+require 'linguist/shebang'
 
 module Linguist
   # Model for accessing classifier training data.
@@ -33,10 +34,6 @@ module Linguist
       Dir.entries(ROOT).sort!.each do |category|
         next if category == '.' || category == '..'
 
-        # Skip text and binary for now
-        # Possibly reconsider this later
-        next if category == 'Text' || category == 'Binary'
-
         dirname = File.join(ROOT, category)
         Dir.entries(dirname).each do |filename|
           next if filename == '.' || filename == '..'
@@ -58,7 +55,7 @@ module Linguist
             yield({
               :path     => path,
               :language => category,
-              :interpreter => Linguist.interpreter_from_shebang(File.read(path)),
+              :interpreter => Shebang.interpreter(File.read(path)),
               :extname  => extname.empty? ? nil : extname
             })
           end
@@ -111,6 +108,7 @@ module Linguist
       db
     end
   end
+<<<<<<< HEAD
 
   # Used to retrieve the interpreter from the shebang line of a file's
   # data.
@@ -148,4 +146,6 @@ module Linguist
     end
   end
 
+=======
+>>>>>>> origin/master
 end
